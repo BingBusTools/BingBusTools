@@ -24,7 +24,6 @@ distribution = false
 
 [tool.pdm.dev-dependencies]
 lint = [
-    "black>=24.8.0",
     "ruff>=0.6.6",
 ]
 
