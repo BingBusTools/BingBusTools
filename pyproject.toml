@@ -10,7 +10,7 @@ authors = [
 ]
 dependencies = [
     "pandas>=2.2.3",
-    "protobuf>=5.28.2",
+    "protobuf==5.28.1",
     "flask>=3.0.3",
     "aiohttp[speedups]>=3.10.5",
     "aiodns>=3.2.0",
