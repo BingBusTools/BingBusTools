@@ -1,5 +1,6 @@
-import aiohttp
 import asyncio
+
+import aiohttp
 
 
 class BC:
@@ -15,8 +16,9 @@ class BC:
                 html = await response.text()
                 print("Body:", html[:15], "...")
 
-async def 
+async def main() -> None:
+    a: BC = BC()
+    await a.poll()
 
 if __name__ == "__main__":
-    a: BC = BC()
-    a.poll()
+    asyncio.run(main())
