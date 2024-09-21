@@ -1,7 +1,5 @@
 from io import TextIOWrapper
-from typing import Tuple
 from bs4 import BeautifulSoup
-import concurrent.futures
 import bs4
 import aiohttp
 import asyncio
@@ -54,8 +52,8 @@ async def calendar(session: aiohttp.ClientSession):
             "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
             file=file,
         )
-        print(f"wd,1,1,1,1,1,0,0", file=file)
-        print(f"we,0,0,0,0,0,1,1", file=file)
+        print("wd,1,1,1,1,1,0,0", file=file)
+        print("we,0,0,0,0,0,1,1", file=file)
 
 
 class Trip:
