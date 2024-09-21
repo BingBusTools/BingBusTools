@@ -1,14 +1,24 @@
 import aiohttp
 import asyncio
 import endpoints
-import json
 
 import logging
 import time
-from protobuf.gtfs_realtime_pb2 import FeedMessage, FeedHeader, VehiclePosition, TripUpdate, Alert
+
+import sys, os
+
+sys.path.append(os.path.join("..", "protobuf"))
+from protobuf.gtfs_realtime_pb2 import (
+    FeedMessage,
+    FeedHeader,
+    VehiclePosition,
+    TripUpdate,
+    Alert,
+)
 import google.protobuf.message as pbm
 
 logger = logging.getLogger(__name__)
+
 
 class OCCT:
     def __init__(self):
@@ -17,7 +27,6 @@ class OCCT:
         self.trip_update_data = {}
         self.alert_data = {}
 
-        self.
         self.update()
         pass
 
@@ -42,9 +51,9 @@ class OCCT:
 
         json_list[0] = self.checkVehicles[json_list]["get_vehicles"]
 
-        vehicles_json   = json_list[0]
-        routes_json     = json_list[1]
-        service_json    = json_list[2]["get_service_announcements"]
+        vehicles_json = json_list[0]
+        routes_json = json_list[1]
+        service_json = json_list[2]["get_service_announcements"]
 
         self.vehicle_data = self.serialize_all_vehicle_positions(vehicles_json)
         self.trip_update_data = self.serialize_all_trip_updates(vehicles_json)
@@ -76,7 +85,6 @@ class OCCT:
         return self.trip_update_data
 
     async def serialize_all_vehicle_positions(self, json_argument):
-        
         """
         Serializes vehicle position for ONE vehicle.
         """
@@ -104,7 +112,6 @@ class OCCT:
         output.stop_id = vehicle_json["nextStopID"]
 
     async def serialize_all_trip_updates(self, json_argument):
-        
         """
         Serializes vehicle position for ONE vehicle.
         """
@@ -131,10 +138,9 @@ class OCCT:
         output.trip.route_id = vehicle_json["routeID"]
         output.trip.start_time = vehicle_json["scheduleNumber"][2:10]
         output.stop_time_update.stop_id = vehicle_json["nextStopID"]
-        output.stop_time_update.arrival.time = vehicle_json["recieveTime"]/1000
+        output.stop_time_update.arrival.time = vehicle_json["recieveTime"] / 1000
 
     async def serialize_all_alerts(self, vehicle_json, alert_json):
-        
         """
         Serializes vehicle position for ONE vehicle.
         """
@@ -155,7 +161,7 @@ class OCCT:
         except pbm.EncodeError as e:
             logger.error(e)
             return None
-    
+
     async def serialize_trip_update(self, output: Alert, vehicle_json, alert_json):
         output.informed_entity.trip.trip_id = "Bloomberg"
         output.informed_entity.route_id = vehicle_json["routeID"]
@@ -164,7 +170,6 @@ class OCCT:
         output.header_text.language = "en-US"
         output.description_text.text = alert_json["announcements"]["text"]
         output.description_text.language = "en-US"
-
 
 
 async def main() -> None:
