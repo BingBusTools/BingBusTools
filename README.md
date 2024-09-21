@@ -17,8 +17,16 @@ ruff format
 mypy .
 ```
 
-Add new dependency:
+## Development Tasks
+
+Add new dependency: (add `-d` for dev)
 
 ```
 pdm add <PACKAGE>
+```
+
+Generate protobuf code: (requires `protoc`)
+
+```
+protoc --proto_path=src/protobuf --python_out=src/protobuf src/protobuf/gtfs-realtime.proto
 ```
