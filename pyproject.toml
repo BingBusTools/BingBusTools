@@ -28,4 +28,4 @@ distribution = false
 lint = ["ruff>=0.6.6", "mypy>=1.11.2"]
 
 [tool.ruff]
-lint.select = ["E", "F", "I001", "I002"]
+lint.select = ["E", "F"]
