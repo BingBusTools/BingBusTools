@@ -9,7 +9,6 @@ authors = [
     {name = "Spencer Powell", email = "spowel11@binghamton.edu"},
 ]
 dependencies = [
-    "numpy>=2.1.1",
     "pandas>=2.2.3",
     "protobuf>=5.28.2",
     "flask>=3.0.3",

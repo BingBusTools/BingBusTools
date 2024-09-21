@@ -5,7 +5,7 @@
 groups = ["default", "lint"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:1a48653bdef663a10144fee7667ae9b825251c2a345e58aab7381bdfcfe2df30"
+content_hash = "sha256:1c7a4a5d113ede93db180ef0c2c7b4554d2355a95515fdfd8a75c384b414df0e"
 
 [[metadata.targets]]
 requires_python = ">=3.10"
@@ -688,6 +688,7 @@ version = "2.1.1"
 requires_python = ">=3.10"
 summary = "Fundamental package for array computing in Python"
 groups = ["default"]
+marker = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "numpy-2.1.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c8a0e34993b510fc19b9a2ce7f31cb8e94ecf6e924a40c0c9dd4f62d0aac47d9"},
     {file = "numpy-2.1.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:7dd86dfaf7c900c0bbdcb8b16e2f6ddf1eb1fe39c6c8cca6e94844ed3152a8fd"},
