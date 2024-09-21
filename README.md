@@ -28,5 +28,5 @@ pdm add <PACKAGE>
 Generate protobuf code: (requires `protoc`)
 
 ```
-protoc --proto_path=src/protobuf --python_out=src/protobuf src/protobuf/gtfs-realtime.proto
+protoc --proto_path=src/protobuf --python_out=src/protobuf --mypy_out=src/protobuf src/protobuf/gtfs-realtime.proto
 ```
