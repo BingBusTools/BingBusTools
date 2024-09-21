@@ -1,0 +1,22 @@
+import aiohttp
+import asyncio
+
+
+class BC:
+    def __init__(self):
+        pass
+
+    async def poll(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get("http://python.org") as response:
+                print("Status:", response.status)
+                print("Content-type:", response.headers["content-type"])
+
+                html = await response.text()
+                print("Body:", html[:15], "...")
+
+async def 
+
+if __name__ == "__main__":
+    a: BC = BC()
+    a.poll()
