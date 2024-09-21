@@ -23,13 +23,16 @@ class OCCT:
             async with session.get(endpoints.OCCT_VEHICLES) as vehicleResponse:
                 jsonOCCTVEHICLES = await vehicleResponse.json()
                 self.VehicleData = self.checkVehicles(jsonOCCTVEHICLES["get_vehicles"])
-                print(self.VehicleData)
+                # print(self.VehicleData)
+        return self.VehicleData
 
     async def pollRoutes(self) -> None:
         async with aiohttp.ClientSession() as session:
             async with session.get(endpoints.OCCT_ROUTES) as routeResponse:
                 jsonOCCTRoutes = await routeResponse.json()
                 self.RouteData = jsonOCCTRoutes["get_routes"]
+
+        return self.RouteData
 
     async def pollService(self) -> None:
         async with aiohttp.ClientSession() as session:
@@ -38,6 +41,8 @@ class OCCT:
             ) as serviceResponse:
                 jsonOCCTService = await serviceResponse.json()
                 self.ServiceData = jsonOCCTService["get_service_announcements"]
+
+        return self.ServiceData
 
     async def pollAll(self) -> None:
         await self.pollVehicles()
