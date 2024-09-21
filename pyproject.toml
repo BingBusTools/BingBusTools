@@ -3,10 +3,10 @@ name = "bingbustools"
 version = "0.0.1"
 description = "Tools for Binghamton buses."
 authors = [
-    {name = "Lucy Loerker", email = "kloerke1@binghamton.edu"},
-    {name = "Hewitt Wang", email = "hwang38@binghamton.edu"},
-    {name = "Daniel Zheng", email = "dzheng19@binghamton.edu"},
-    {name = "Spencer Powell", email = "spowel11@binghamton.edu"},
+    { name = "Lucy Loerker", email = "kloerke1@binghamton.edu" },
+    { name = "Hewitt Wang", email = "hwang38@binghamton.edu" },
+    { name = "Daniel Zheng", email = "dzheng19@binghamton.edu" },
+    { name = "Spencer Powell", email = "spowel11@binghamton.edu" },
 ]
 dependencies = [
     "pandas>=2.2.3",
@@ -18,17 +18,14 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
 
 [tool.pdm]
 distribution = false
 
 [tool.pdm.dev-dependencies]
-lint = [
-    "ruff>=0.6.6",
-    "mypy>=1.11.2",
-]
+lint = ["ruff>=0.6.6", "mypy>=1.11.2"]
 
 [tool.ruff]
 lint.select = ["E", "F", "I001", "I002"]
