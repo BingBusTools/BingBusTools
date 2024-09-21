@@ -4,6 +4,9 @@ version = "0.0.1"
 description = "Tools for Binghamton buses."
 authors = [
     {name = "Lucy Loerker", email = "kloerke1@binghamton.edu"},
+    {name = "Hewitt Wang", email = "hwang38@binghamton.edu"},
+    {name = "Daniel Zheng", email = "dzheng19@binghamton.edu"},
+    {name = "Spencer Powell", email = "spowel11@binghamton.edu"},
 ]
 dependencies = []
 requires-python = ">=3.10"
