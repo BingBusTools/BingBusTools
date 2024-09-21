@@ -5,7 +5,7 @@ import endpoints
 import logging
 import time
 
-from protobuf_package.gtfs_realtime_pb2 import (
+from protobuf.gtfs_realtime_pb2 import (
     FeedMessage,
     FeedHeader,
 )
