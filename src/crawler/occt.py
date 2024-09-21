@@ -5,17 +5,12 @@ import endpoints
 import logging
 import time
 
-import sys, os
-
-sys.path.append(os.path.join("..", "protobuf"))
-from protobuf.gtfs_realtime_pb2 import (
+from protobuf_package.gtfs_realtime_pb2 import (
     FeedMessage,
     FeedHeader,
-    VehiclePosition,
-    TripUpdate,
-    Alert,
 )
-import google.protobuf.message as pbm
+
+import google.protobuf.message as pdm
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +101,7 @@ class OCCT:
             logger.error(e)
             return None
 
-    async def serialize_vehicle_position(self, output: VehiclePosition, vehicle_json):
+    async def serialize_vehicle_position(self, output, vehicle_json):
         output.position.latitude = vehicle_json["lat"]
         output.position.longitude = vehicle_json["lng"]
         output.stop_id = vehicle_json["nextStopID"]
@@ -125,7 +120,7 @@ class OCCT:
         for trip_update_data in json_argument:
             ent = msg.entity.add()
             ent.id = "TODO"
-            self.serialize_vehicle_position(ent.trip_update, trip_update_data)
+            self.serialize_all_trip_update(ent.trip_update, trip_update_data)
 
         try:
             return msg.SerializeToString()
@@ -133,7 +128,7 @@ class OCCT:
             logger.error(e)
             return None
 
-    async def serialize_trip_update(self, output: TripUpdate, vehicle_json):
+    async def serialize_trip_update(self, output, vehicle_json):
         output.trip.trip_id = "Bloomberg"
         output.trip.route_id = vehicle_json["routeID"]
         output.trip.start_time = vehicle_json["scheduleNumber"][2:10]
@@ -154,7 +149,7 @@ class OCCT:
         for alerts_data in vehicle_json:
             ent = msg.entity.add()
             ent.id = "TODO"
-            self.serialize_vehicle_position(ent.alert, alerts_data, alert_json)
+            self.serialize_alert_update(ent.alert, alerts_data, alert_json)
 
         try:
             return msg.SerializeToString()
@@ -162,7 +157,7 @@ class OCCT:
             logger.error(e)
             return None
 
-    async def serialize_trip_update(self, output: Alert, vehicle_json, alert_json):
+    async def serialize_alert_update(self, output, vehicle_json, alert_json):
         output.informed_entity.trip.trip_id = "Bloomberg"
         output.informed_entity.route_id = vehicle_json["routeID"]
         output.informed_entity.stop_id = vehicle_json["stopID"]
