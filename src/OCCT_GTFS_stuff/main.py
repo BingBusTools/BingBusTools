@@ -1,3 +1,5 @@
+from io import TextIOWrapper
+from typing import Tuple
 from bs4 import BeautifulSoup
 import concurrent.futures
 import bs4
@@ -52,49 +54,148 @@ async def calendar(session: aiohttp.ClientSession):
             "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
             file=file,
         )
-        print(f"0,1,1,1,1,1,1,1")
+        print(f"wd,1,1,1,1,1,0,0", file=file)
+        print(f"we,0,0,0,0,0,1,1", file=file)
+
+
+class Trip:
+    route: str
+    start_time: str
+    end_time: str
+    calendar: str
+    start_stop: str
+    end_stop: str
+
+    def __init__(
+        self,
+        route: str,
+        start_time: str,
+        end_time: str,
+        calendar: str,
+        start_stop: str,
+        end_stop: str,
+    ):
+        self.route = route
+        self.start_time = start_time
+        self.end_time = end_time
+        self.calendar = calendar
+        self.start_stop = start_stop
+        self.end_stop = end_stop
 
 
 async def trips(session: aiohttp.ClientSession):
-    routes_data = None
-    route_times = {}
-    for html_path in html_grabs:
-        soup = None
-        async with session.get(html_path) as response:
-            soup = BeautifulSoup(await response.text(), features="html.parser")
-        elem = soup.select_one(".container-title")
-        assert elem is not None
-        elem = elem.select_one("span")
-        assert elem is not None
-        title = elem.string
-        assert title is not None
-        title.replace("-"," ")
-        route_times[title] = {}
-        box = soup.select_one("content_box")
-        assert box is not None
-        assert box.contents[0] is not None
-        assert box.contents[1] is not None
-        box.contents
-        route_times[title]["wd"] = box.
-        route_times[title]["we"] = box.contents[1]
+    # maps route-(we/wd) to a list of tuples with start and end times
+    trips = []
+    data = None
     async with session.get(routes_url) as response:
-        routes_data = (await response.json())["get_routes"]
-    with open("trips.txt", "w+") as trips:
+        data = (await response.json())["get_routes"]
+    assert isinstance(data, list)
+    for html_yoink in html_grabs:
+        async with session.get(html_yoink) as response:
+            resp = await response.text()
+            soup = BeautifulSoup(resp)
+            content_box = soup.select_one(".content_box")
+            assert content_box is not None
+            assert isinstance(content_box.contents[0], bs4.Tag)
+            assert isinstance(content_box.contents[1], bs4.Tag)
+            weekdays = content_box.contents[0].select_one(".rs-table")
+            weekends = content_box.contents[1].select_one(".rs-table")
+            assert weekdays is not None
+            assert weekends is not None
+            weekdays = weekdays.select_one("table")
+            weekends = weekends.select_one("table")
+            assert weekdays is not None
+            assert weekends is not None
+            weekdays = weekdays.select_one("tbody")
+            weekends = weekends.select_one("tbody")
+            assert weekdays is not None
+            assert weekends is not None
+
+            route_name = soup.select_one(".container-title")
+            assert route_name is not None
+
+            route_name = route_name.get_text()
+            route_name.replace("-", " ")
+
+            for row in weekdays.select("tr"):
+                columns = row.select("td")
+                start = columns[0]
+                end = columns[-1]
+                real_route = None
+                for route in data:
+                    route["name"].replace("-", " ")
+                    if route["name"] == route_name:
+                        real_route = route["name"]
+                        break
+
+                assert real_route is not None
+                assert real_route["stops"] is not None
+
+                trips.append(
+                    Trip(
+                        real_route["id"],
+                        start.get_text(),
+                        end.get_text(),
+                        "wd",
+                        real_route["stops"][0],
+                        real_route["stops"][-1],
+                    )
+                )
+            for row in weekends.select("tr"):
+                columns = row.select("td")
+                start = columns[0]
+                end = columns[-1]
+                real_route = None
+                for route in data:
+                    route["name"].replace("-", " ")
+                    if route["name"] == route_name:
+                        real_route = route["name"]
+                        break
+
+                assert real_route is not None
+                assert real_route["stops"] is not None
+
+                trips.append(
+                    Trip(
+                        real_route["id"],
+                        start.get_text(),
+                        end.get_text(),
+                        "wd",
+                        real_route["stops"][0],
+                        real_route["stops"][-1],
+                    )
+                )
+
+    with open("trips.txt", "w+") as trip:
         with open("stop_times.txt", "w+") as stop_times:
-            print("route_id,service_id,trip_id,bikes_allowed", file=trips)
-            for i, route in enumerate(routes_data):
-                for t in ["wd","we"]:
-                    for time in []
-                        print(f"{route["id"]},{0},{f"{route["id"]}-"},1", file=stop_times)
+            await process_trips(trip, stop_times, trips)
+
+
+async def process_trips(
+    trip_file: TextIOWrapper, stop_times_file: TextIOWrapper, trips: list[Trip]
+):
+    print("route_id,service_id,trip_id", file=trip_file)
+    print(
+        "trip_id,arrival_time,departure_time,stop_sequence,timepoint,stop_id",
+        file=stop_times_file,
+    )
+    for trip in trips:
+        trip_id = f"{trip.route}-{trip.start_time}-{trip.calendar}"
+        print(f"{trip.route},{trip.calendar},{trip_id}", file=trip_file)
+        print(
+            f"{trip_id},{trip.start_time},{trip.start_time},0,0,{trip.start_stop}",
+            file=stop_times_file,
+        )
+        # if OCCT has more than 255 stops for a trip I will be surprised
+        print(
+            f"{trip_id},{trip.end_time},{trip.end_time},255,0,{trip.end_stop}",
+            file=stop_times_file,
+        )
 
 
 # optional
 async def shapes(session: aiohttp.ClientSession):
     pass
-
-
-async def stop_times(session: aiohttp.ClientSession):
-    async with aiohttp.ClientSession() as session:
 
 
 async def routes(session: aiohttp.ClientSession):
@@ -115,9 +216,13 @@ async def routes(session: aiohttp.ClientSession):
 
 async def agency(session: aiohttp.ClientSession):
     with open("agency.txt", "w+") as file:
-        print("agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone", file=file)
         print(
-            "0,OCCT,https://occtransport.org/index.html,America/New_York,en,1-607-777-6989", file=file
+            "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone",
+            file=file,
+        )
+        print(
+            "0,OCCT,https://occtransport.org/index.html,America/New_York,en,1-607-777-6989",
+            file=file,
         )
 
 
