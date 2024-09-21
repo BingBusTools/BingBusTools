@@ -28,6 +28,8 @@ class OCCT:
 
     async def pollVehicles(self) -> None:
         async with self.session.get(endpoints.OCCT_VEHICLES) as vehicleResponse:
+            self.validate_res_status(vehicleResponse)
+
             jsonOCCTVEHICLES = await vehicleResponse.json()
             self.VehicleData = self.checkVehicles(jsonOCCTVEHICLES["get_vehicles"])
             # print(self.VehicleData)
@@ -35,6 +37,8 @@ class OCCT:
 
     async def pollRoutes(self) -> None:
         async with self.session.get(endpoints.OCCT_ROUTES) as routeResponse:
+            self.validate_res_status(routeResponse)
+
             jsonOCCTRoutes = await routeResponse.json()
             self.RouteData = jsonOCCTRoutes["get_routes"]
 
@@ -44,6 +48,8 @@ class OCCT:
         async with self.session.get(
             endpoints.OCCT_SERVICE_ANNOUNCEMENTS
         ) as serviceResponse:
+            self.validate_res_status(serviceResponse)
+
             jsonOCCTService = await serviceResponse.json()
             self.ServiceData = jsonOCCTService["get_service_announcements"]
 
