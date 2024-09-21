@@ -16,9 +16,11 @@ html_grabs = [
     "https://occtransport.org/pages/routes/udc-out.html",
     "https://occtransport.org/pages/routes/udc-in.html",
     "https://occtransport.org/pages/routes/ds-out.html",
-    "https://occtransport.org/pages/routes/cs.html",
+    # uses text ewww
+    # "https://occtransport.org/pages/routes/cs.html",
     "https://occtransport.org/pages/routes/uc.html",
-    "https://occtransport.org/pages/routes/iu.html",
+    # doesn't exist in API I think
+    # "https://occtransport.org/pages/routes/iu.html",
 ]
 
 routes_url = (
@@ -74,9 +76,16 @@ class Trip:
         start_stop: str,
         end_stop: str,
     ):
+        start_match = re.match(r"[0-9]{1,2}:[0-9]{2}\s*[AP]M", start_time)
+        end_match = re.match(r"[0-9]{1,2}:[0-9]{2}\s*[AP]M", end_time)
+
+        assert start_match is not None
+        assert end_match is not None
+
         self.route = route
-        self.start_time = start_time
-        self.end_time = end_time
+
+        self.start_time = start_time[start_match.pos : start_match.endpos]
+        self.end_time = end_time[end_match.pos : end_match.endpos]
         self.calendar = calendar
         self.start_stop = start_stop
         self.end_stop = end_stop
@@ -98,8 +107,12 @@ async def trips(session: aiohttp.ClientSession):
             assert route_name is not None
 
             route_name = route_name.get_text()
-            route_name.replace("-", " ")
+            route_name = route_name.replace("-", " ")
+            route_name = route_name.replace("St ", "")
+            route_name = route_name.replace(" Shuttle", "")
             route_name = route_name.strip()
+            if route_name.upper() == "UCLUB":
+                route_name = "UCLUB"
             print(route_name)
             content_box = soup.select_one(".content_box")
             assert content_box is not None
@@ -125,7 +138,7 @@ async def trips(session: aiohttp.ClientSession):
                 end = columns[-1]
                 real_route = None
                 for route in data:
-                    route["name"].replace("-", " ")
+                    route["name"] = route["name"].replace("-", " ")
                     route["name"] = route["name"].strip()
                     if route["name"] == route_name:
                         real_route = route
@@ -164,7 +177,7 @@ async def trips(session: aiohttp.ClientSession):
                         real_route["id"],
                         start.get_text(),
                         end.get_text(),
-                        "wd",
+                        "we",
                         real_route["stops"][0],
                         real_route["stops"][-1],
                     )
