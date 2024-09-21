@@ -30,11 +30,10 @@ stops_url = (
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        futs = [stops(session), trips(session), stop_times(session)]
-    futs = [asyncio.create_task(f) for f in futs]
-    # asyncio.gather(*futs)
-    for f in futs:
-        await f
+        futs = [stops(session), routes(session)]
+        futs = [asyncio.create_task(f) for f in futs]
+        for f in futs:
+            await f
 
 
 async def stops(session: aiohttp.ClientSession):
@@ -57,8 +56,13 @@ async def trips(session: aiohttp.ClientSession):
         stops_data = (await response.json())["get_stops"]
     async with session.get(routes_url) as response:
         routes_data = (await response.json())["get_routes"]
-    async with session.get(html_path) as response:
-        pass
+    with open("trips.txt", "w+") as file:
+        print("route_id,service_id,trip_id", file=file)
+
+
+# optional
+async def shapes(session: aiohttp.ClientSession):
+    pass
 
 
 async def stop_times(session: aiohttp.ClientSession):
@@ -73,6 +77,31 @@ async def stop_times(session: aiohttp.ClientSession):
             assert elem is not None
             title = elem.string
             print(f"title: {title}")
+
+
+async def routes(session: aiohttp.ClientSession):
+    data = None
+    async with session.get(routes_url) as response:
+        data = (await response.json())["get_routes"]
+    with open("routes.txt", "w+") as file:
+        print(
+            "route_id,agency_id,route_short_name,route_long_name,route_type,route_color",
+            file=file,
+        )
+        for route in data:
+            print(
+                f"{route["id"]},{0},{route["abbr"]},{route["name"]},{3},{route["color"]}",
+                file=file,
+            )
+    pass
+
+
+async def agency(session: aiohttp.ClientSession):
+    pass
+
+
+async def feed_info(session: aiohttp.ClientSession):
+    pass
 
 
 asyncio.run(main())
