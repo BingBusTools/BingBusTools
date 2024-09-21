@@ -1,4 +1,5 @@
 from io import TextIOWrapper
+import re
 from bs4 import BeautifulSoup
 import bs4
 import aiohttp
@@ -91,29 +92,32 @@ async def trips(session: aiohttp.ClientSession):
     for html_yoink in html_grabs:
         async with session.get(html_yoink) as response:
             resp = await response.text()
-            soup = BeautifulSoup(resp)
-            content_box = soup.select_one(".content_box")
-            assert content_box is not None
-            assert isinstance(content_box.contents[0], bs4.Tag)
-            assert isinstance(content_box.contents[1], bs4.Tag)
-            weekdays = content_box.contents[0].select_one(".rs-table")
-            weekends = content_box.contents[1].select_one(".rs-table")
-            assert weekdays is not None
-            assert weekends is not None
-            weekdays = weekdays.select_one("table")
-            weekends = weekends.select_one("table")
-            assert weekdays is not None
-            assert weekends is not None
-            weekdays = weekdays.select_one("tbody")
-            weekends = weekends.select_one("tbody")
-            assert weekdays is not None
-            assert weekends is not None
+            soup = BeautifulSoup(resp, features="html.parser")
 
             route_name = soup.select_one(".container-title")
             assert route_name is not None
 
             route_name = route_name.get_text()
             route_name.replace("-", " ")
+            route_name = route_name.strip()
+            print(route_name)
+            content_box = soup.select_one(".content_box")
+            assert content_box is not None
+            weekdays = content_box.findChildren("div")[0]
+            weekends = content_box.findChildren("div")[2]
+
+            weekdays = weekdays.findChildren("table")[0]
+            weekends = weekends.findChildren("table")[0]
+
+            # weekdays = weekdays.select_one("table")
+
+            assert weekdays is not None
+            assert weekends is not None
+
+            weekdays = weekdays.select_one("tbody")
+            weekends = weekends.select_one("tbody")
+            assert weekdays is not None
+            assert weekends is not None
 
             for row in weekdays.select("tr"):
                 columns = row.select("td")
@@ -122,11 +126,13 @@ async def trips(session: aiohttp.ClientSession):
                 real_route = None
                 for route in data:
                     route["name"].replace("-", " ")
+                    route["name"] = route["name"].strip()
                     if route["name"] == route_name:
-                        real_route = route["name"]
+                        real_route = route
                         break
 
                 assert real_route is not None
+                assert real_route["id"] is not None
                 assert real_route["stops"] is not None
 
                 trips.append(
@@ -147,10 +153,10 @@ async def trips(session: aiohttp.ClientSession):
                 for route in data:
                     route["name"].replace("-", " ")
                     if route["name"] == route_name:
-                        real_route = route["name"]
+                        real_route = route
                         break
-
                 assert real_route is not None
+                assert real_route["id"] is not None
                 assert real_route["stops"] is not None
 
                 trips.append(
