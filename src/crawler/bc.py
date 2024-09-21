@@ -7,7 +7,7 @@ class BC:
     def __init__(self):
         pass
 
-    async def poll(self):
+    async def poll(self) -> None:
         async with aiohttp.ClientSession() as session:
             async with session.get("http://python.org") as response:
                 print("Status:", response.status)
