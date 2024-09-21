@@ -27,7 +27,7 @@ class BCTransit:
     def get_stops(self) -> [Dict[str, str]]:
         return self.stops
 
-    async def get_routes(self) -> [Dict[str, str]]:
+    def get_routes(self) -> [Dict[str, str]]:
         return self.routes
         
     async def update(self) -> None:
@@ -58,6 +58,9 @@ async def test_main() -> None:
         bc_wrapper: BCTransit = BCTransit()
         await bc_wrapper.update()
         buses: [Dict[str, str]] = bc_wrapper.get_buses()
+        for bus in buses:
+            print(bus)
+        buses: [Dict[str, str]] = bc_wrapper.get_routes()
         for bus in buses:
             print(bus)
     except RuntimeError as e:
