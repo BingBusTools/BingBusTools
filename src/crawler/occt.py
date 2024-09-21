@@ -5,7 +5,8 @@ import endpoints
 import logging
 import time
 
-from protobuf.gtfs_realtime_pb2 import (
+
+from protobuf_A.gtfs_realtime_pb2 import (
     FeedMessage,
     FeedHeader,
 )
@@ -22,7 +23,6 @@ class OCCT:
         self.trip_update_data = {}
         self.alert_data = {}
 
-        self.update()
         pass
 
     def close(self) -> None:
