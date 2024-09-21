@@ -28,4 +28,4 @@ lint = [
 ]
 
 [tool.ruff]
-select = ["E", "F", "I001", "I002"]
+lint.select = ["E", "F", "I001", "I002"]

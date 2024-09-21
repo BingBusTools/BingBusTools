@@ -8,6 +8,14 @@ Setup:
 pdm install --dev
 ```
 
+Lint + format:
+
+```
+eval $(pdm venv activate) # only needs to be done once
+ruff check
+ruff lint
+```
+
 Add new dependency:
 
 ```
