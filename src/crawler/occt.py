@@ -1,15 +1,54 @@
 import aiohttp
 import asyncio
+import endpoints
+import json
 
-class OCCT()
+
+class OCCT:
     def __init__(self):
+        self.VehicleData = {}
+        self.RouteData = {}
+        self.ServiceData = {}
         pass
 
-    async def poll(self):
-        async with aiohttp.ClientSession as session:
-            async with session.get("http://my.binghamton.edu") as response:
-                print("Chistophir Binghamton Status: ", response)
-                print("HackBU Organizer Content-type: ", response.headers['content-type'])
+    def checkVehicles(self, vehicleDict):
+        for i, vehicle in enumerate(vehicleDict):
+            if vehicle["tripID"] is None:
+                vehicleDict[i] = None
+                # print(vehicle)
+        return vehicleDict
 
-                html = await response.txt()
-                print("A Train Body: ", html[:15], "...")
+    async def pollVehicles(self) -> None:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(endpoints.OCCT_VEHICLES) as vehicleResponse:
+                jsonOCCTVEHICLES = await vehicleResponse.json()
+                self.VehicleData = self.checkVehicles(jsonOCCTVEHICLES["get_vehicles"])
+                print(self.VehicleData)
+
+    async def pollRoutes(self) -> None:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(endpoints.OCCT_ROUTES) as routeResponse:
+                jsonOCCTRoutes = await routeResponse.json()
+                self.RouteData = jsonOCCTRoutes["get_routes"]
+
+    async def pollService(self) -> None:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                endpoints.OCCT_SERVICE_ANNOUNCEMENTS
+            ) as serviceResponse:
+                jsonOCCTService = await serviceResponse.json()
+                self.ServiceData = jsonOCCTService["get_service_announcements"]
+
+    async def pollAll(self) -> None:
+        await self.pollVehicles()
+        await self.pollRoutes()
+        await self.pollService()
+
+
+async def main() -> None:
+    occt_wrapper: OCCT = OCCT()
+    await occt_wrapper.pollAll()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
