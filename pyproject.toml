@@ -1,0 +1,24 @@
+[project]
+name = "bingbustools"
+version = "0.0.1"
+description = "Tools for Binghamton buses."
+authors = [
+    {name = "Lucy Loerker", email = "kloerke1@binghamton.edu"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "black>=24.8.0",
+    "ruff>=0.6.6",
+]
+
+[tool.ruff]
+select = ["E", "F", "I001", "I002"]
