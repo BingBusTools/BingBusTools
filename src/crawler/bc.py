@@ -1,5 +1,5 @@
 import asyncio
-
+import endpoints
 import aiohttp
 
 
@@ -9,7 +9,7 @@ class BC:
 
     async def poll(self) -> None:
         async with aiohttp.ClientSession() as session:
-            async with session.get("http://python.org") as response:
+            async with session.get(endpoints.BC_BUSES) as response:
                 print("Status:", response.status)
                 print("Content-type:", response.headers["content-type"])
 
