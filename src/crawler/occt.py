@@ -6,7 +6,7 @@ import logging
 import time
 
 
-from protobuf_A.gtfs_realtime_pb2 import (
+from protobufa.gtfs_realtime_pb2 import (
     FeedMessage,
     FeedHeader,
 )
